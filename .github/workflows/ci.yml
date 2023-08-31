@@ -36,7 +36,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ env.DOCKER_REGISTRY }}
         
       - name: Build Docker Image
-        run: docker build -t voting:latest -f vote/Dockerfile vote/
+        run: docker build -t golanm/voting:latest -f vote/Dockerfile vote/
       
       - name: Push Docker Image
-        run: docker push voting:latest
+        run: docker push golanm/voting:latest
