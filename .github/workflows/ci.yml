@@ -1,42 +1,101 @@
-name: Python CI and Docker Build/Push
+# name: Python CI and Docker Build/Push
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       DOCKER_REGISTRY: https://index.docker.io/v1/
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: 3.9
+
+#       - name: Install dependencies
+#         run: |
+#           pip install -r vote/requirements.txt
+
+#       - name: Run tests (or other tasks)
+#         run: |
+#           python -m unittest discover
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v1
+
+#       - name: Login to Docker Hub
+#         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ env.DOCKER_REGISTRY }}
+        
+#       - name: Build Docker Image
+#         run: docker build -t golanm/voting:latest -f vote/Dockerfile vote/
+      
+#       - name: Push Docker Image
+#         run: docker push golanm/voting:latest
+name: Docker CI
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'vote/**'
+      - 'result/**'
+      - 'worker/**'
+  pull_request:
+    paths:
+      - 'vote/**'
+      - 'result/**'
+      - 'worker/**'
 
 jobs:
-  build:
+  build_vote:
+    name: Build and Push Vote
     runs-on: ubuntu-latest
-
-    env:
-      DOCKER_REGISTRY: https://index.docker.io/v1/
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-
-      - name: Install dependencies
+      - name: Build and Push Vote Docker Image
         run: |
-          pip install -r vote/requirements.txt
+          docker build -t my-vote-image:latest -f vote/Dockerfile vote/
+          docker push my-vote-image:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Run tests (or other tasks)
+  build_result:
+    name: Build and Push Result
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and Push Result Docker Image
         run: |
-          python -m unittest discover
+          docker build -t my-result-image:latest -f result/Dockerfile result/
+          docker push my-result-image:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+  build_worker:
+    name: Build and Push Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ env.DOCKER_REGISTRY }}
-        
-      - name: Build Docker Image
-        run: docker build -t golanm/voting:latest -f vote/Dockerfile vote/
-      
-      - name: Push Docker Image
-        run: docker push golanm/voting:latest
+      - name: Build and Push Worker Docker Image
+        run: |
+          docker build -t my-worker-image:latest -f worker/Dockerfile worker/
+          docker push my-worker-image:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
