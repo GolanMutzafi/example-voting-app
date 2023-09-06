@@ -1,45 +1,3 @@
-# name: Python CI and Docker Build/Push
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     env:
-#       DOCKER_REGISTRY: https://index.docker.io/v1/
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: 3.9
-
-#       - name: Install dependencies
-#         run: |
-#           pip install -r vote/requirements.txt
-
-#       - name: Run tests (or other tasks)
-#         run: |
-#           python -m unittest discover
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v1
-
-#       - name: Login to Docker Hub
-#         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ env.DOCKER_REGISTRY }}
-        
-#       - name: Build Docker Image
-#         run: docker build -t golanm/voting:latest -f vote/Dockerfile vote/
-      
-#       - name: Push Docker Image
-#         run: docker push golanm/voting:latest
 name: Docker CI
 
 on:
@@ -56,46 +14,63 @@ on:
 
 jobs:
   build_vote:
-    name: Build and Push Vote
+    name: Build Vote Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and Push Vote Docker Image
+      - name: Build Vote Docker Image
         run: |
-          docker build -t my-vote-image:latest -f vote/Dockerfile vote/
-          docker push my-vote-image:latest
+          docker build -t voting-app-image:latest -f vote/Dockerfile vote/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   build_result:
-    name: Build and Push Result
+    name: Build Result Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and Push Result Docker Image
+      - name: Build Result Docker Image
         run: |
-          docker build -t my-result-image:latest -f result/Dockerfile result/
-          docker push my-result-image:latest
+          docker build -t voting-app-result:latest -f result/Dockerfile result/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   build_worker:
-    name: Build and Push Worker
+    name: Build Worker Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and Push Worker Docker Image
+      - name: Build Worker Docker Image
         run: |
-          docker build -t my-worker-image:latest -f worker/Dockerfile worker/
-          docker push my-worker-image:latest
+          docker build -t voting-worker:latest -f worker/Dockerfile worker/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  push_images:
+    name: Push Docker Images
+    runs-on: ubuntu-latest
+    needs: [build_vote, build_result, build_worker]
+    steps:
+      - name: Push Vote Docker Image
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push voting-app-image:latest
+
+      - name: Push Result Docker Image
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push voting-app-result:latest
+
+      - name: Push Worker Docker Image
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push voting-worker:latest
