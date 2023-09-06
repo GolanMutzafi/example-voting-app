@@ -1,0 +1,40 @@
+name: Worker Micro-service CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'worker/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'worker/**'
+
+jobs:
+  build_worker:
+    name: Build Worker Micro-service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Worker Docker Image
+        run: |
+          docker build -t voting-worker:latest -f worker/Dockerfile worker/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  push_worker:
+    name: Push Worker Docker Image
+    runs-on: ubuntu-latest
+    needs: build_worker
+    steps:
+      - name: Push Worker Docker Image
+        run: |
+          docker push voting-worker:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

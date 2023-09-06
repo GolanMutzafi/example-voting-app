@@ -1,0 +1,40 @@
+name: Result Micro-service CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'result/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'result/**'
+
+jobs:
+  build_result:
+    name: Build Result Micro-service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Result Docker Image
+        run: |
+          docker build -t voting-app-result:latest -f result/Dockerfile result/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  push_result:
+    name: Push Result Docker Image
+    runs-on: ubuntu-latest
+    needs: build_result
+    steps:
+      - name: Push Result Docker Image
+        run: |
+          docker push voting-app-result:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

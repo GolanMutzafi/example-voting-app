@@ -1,0 +1,40 @@
+name: Vote Micro-service CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'vote/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'vote/**'
+
+jobs:
+  build_vote:
+    name: Build Vote Micro-service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Vote Docker Image
+        run: |
+          docker build -t voting-app-vote:latest -f vote/Dockerfile vote/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  push_vote:
+    name: Push Vote Docker Image
+    runs-on: ubuntu-latest
+    needs: build_vote
+    steps:
+      - name: Push Vote Docker Image
+        run: |
+          docker push voting-app-vote:latest
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
