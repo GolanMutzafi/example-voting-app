@@ -22,7 +22,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Worker Docker Image
-        run: docker build -t voting-worker:latest -f worker/Dockerfile worker/
+        run: |
+          # Use the GitHub Run Number for unique versioning
+          VERSION="voting-worker:${{ github.run_number }}"
+          docker build -t $VERSION -f worker/Dockerfile worker/
+          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
 
   push_worker:
     name: Push Worker Docker Image
@@ -33,7 +37,9 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Worker Docker Image
-        run: docker push voting-worker:latest
+        run: |
+          # Use the IMAGE_VERSION variable set in the previous step
+          docker push ${{ env.IMAGE_VERSION }}
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
