@@ -28,6 +28,10 @@ jobs:
           docker build -t $VERSION -f vote/Dockerfile vote/
           echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
 
+      # Set the IMAGE_VERSION environment variable for subsequent steps
+      - name: Set IMAGE_VERSION
+        run: echo "IMAGE_VERSION=$VERSION" >> $GITHUB_ENV
+
   push_vote:
     name: Push Vote Docker Image
     runs-on: ubuntu-latest
@@ -38,8 +42,8 @@ jobs:
 
       - name: Push Vote Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the previous step
-          docker push ${{ env.IMAGE_VERSION }}
+          # Use the IMAGE_VERSION environment variable set in the previous step
+          docker push $IMAGE_VERSION
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
