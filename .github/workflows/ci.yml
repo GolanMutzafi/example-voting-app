@@ -22,7 +22,10 @@ jobs:
 
       - name: Build Vote Docker Image
         run: |
-          docker build -t voting-app-image:latest -f vote/Dockerfile vote/
+          # Use the GitHub Run Number for unique versioning
+          VERSION="voting-app-image:${{ github.run_number }}"
+          docker build -t $VERSION -f vote/Dockerfile vote/
+          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -36,7 +39,10 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
-          docker build -t voting-app-result:latest -f result/Dockerfile result/
+          # Use the GitHub Run Number for unique versioning
+          VERSION="voting-app-result:${{ github.run_number }}"
+          docker build -t $VERSION -f result/Dockerfile result/
+          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -50,7 +56,10 @@ jobs:
 
       - name: Build Worker Docker Image
         run: |
-          docker build -t voting-worker:latest -f worker/Dockerfile worker/
+          # Use the GitHub Run Number for unique versioning
+          VERSION="voting-worker:${{ github.run_number }}"
+          docker build -t $VERSION -f worker/Dockerfile worker/
+          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -60,17 +69,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_vote, build_result, build_worker]
     steps:
+      - name: Login to Docker Hub
+        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
       - name: Push Vote Docker Image
         run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push voting-app-image:latest
+          # Use the IMAGE_VERSION variable set in the build_vote step
+          docker push $IMAGE_VERSION
 
       - name: Push Result Docker Image
         run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push voting-app-result:latest
+          # Use the IMAGE_VERSION variable set in the build_result step
+          docker push $IMAGE_VERSION
 
       - name: Push Worker Docker Image
         run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push voting-worker:latest
+          # Use the IMAGE_VERSION variable set in the build_worker step
+          docker push $IMAGE_VERSION
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
