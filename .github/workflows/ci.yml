@@ -20,12 +20,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set IMAGE_VERSION
+        id: version_vote
+        run: echo "::set-output name=version::voting-app-vote-${{ github.run_number }}"
+
       - name: Build Vote Docker Image
         run: |
-          # Use the GitHub Run Number for unique versioning
-          VERSION="voting-app-image:${{ github.run_number }}"
-          docker build -t $VERSION -f vote/Dockerfile vote/
-          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
+          # Use the IMAGE_VERSION variable set above
+          docker build -t voting-app-vote:${{ github.run_number }} -f vote/Dockerfile vote/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -37,12 +39,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set IMAGE_VERSION
+        id: version_result
+        run: echo "::set-output name=version::voting-app-result-${{ github.run_number }}"
+
       - name: Build Result Docker Image
         run: |
-          # Use the GitHub Run Number for unique versioning
-          VERSION="voting-app-result:${{ github.run_number }}"
-          docker build -t $VERSION -f result/Dockerfile result/
-          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
+          # Use the IMAGE_VERSION variable set above
+          docker build -t voting-app-result:${{ github.run_number }} -f result/Dockerfile result/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -54,12 +58,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set IMAGE_VERSION
+        id: version_worker
+        run: echo "::set-output name=version::voting-worker-${{ github.run_number }}"
+
       - name: Build Worker Docker Image
         run: |
-          # Use the GitHub Run Number for unique versioning
-          VERSION="voting-worker:${{ github.run_number }}"
-          docker build -t $VERSION -f worker/Dockerfile worker/
-          echo "::set-env name=IMAGE_VERSION::$VERSION" # Set the IMAGE_VERSION variable for later use
+          # Use the IMAGE_VERSION variable set above
+          docker build -t voting-worker:${{ github.run_number }} -f worker/Dockerfile worker/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -75,17 +81,17 @@ jobs:
       - name: Push Vote Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_vote step
-          docker push $IMAGE_VERSION
+          docker push voting-app-vote:${{ github.run_number }}
 
       - name: Push Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
-          docker push $IMAGE_VERSION
+          docker push voting-app-result:${{ github.run_number }}
 
       - name: Push Worker Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_worker step
-          docker push $IMAGE_VERSION
+          docker push voting-worker:${{ github.run_number }}
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

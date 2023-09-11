@@ -28,7 +28,7 @@ jobs:
       - name: Build Vote Docker Image
         run: |
           # Use the IMAGE_VERSION variable set above
-          docker build -t Voting-Vote:${{ github.run_number }} -f vote/Dockerfile vote/
+          docker build -t voting-Vote:${{ github.run_number }} -f vote/Dockerfile vote/
 
   push_vote:
     name: Push Vote Docker Image
