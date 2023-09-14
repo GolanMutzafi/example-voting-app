@@ -26,8 +26,12 @@ jobs:
 
       - name: Build Vote Docker Image
         run: |
+          # Navigate to the vote directory
+          cd vote
+          
           # Use the IMAGE_VERSION variable set above
-          docker build -t voting-app-vote:${{ github.run_number }} -f vote/Dockerfile vote/
+          docker build -t voting-app-vote:${{ github.run_number }} -t voting-app-vote -f Dockerfile .
+
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -45,8 +49,12 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
+          # Navigate to the result directory
+          cd result
+          
           # Use the IMAGE_VERSION variable set above
-          docker build -t voting-app-result:${{ github.run_number }} -f result/Dockerfile result/
+          docker build -t voting-app-result:${{ github.run_number }} -f Dockerfile .
+
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -64,8 +72,12 @@ jobs:
 
       - name: Build Worker Docker Image
         run: |
+          # Navigate to the worker directory
+          cd worker
+          
           # Use the IMAGE_VERSION variable set above
-          docker build -t voting-worker:${{ github.run_number }} -f worker/Dockerfile worker/
+          docker build -t voting-worker:${{ github.run_number }} -f Dockerfile .
+
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
