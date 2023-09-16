@@ -30,11 +30,12 @@ jobs:
       - name: Build Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set above
-          docker build -t voting-Result:${{ github.run_number }} -f Dockerfile result/
+          docker build -t voting-Result:${{ github.run_number }} -f result/Dockerfile .
 
   push_result:
     name: Push Result Docker Image
     runs-on: ubuntu-latest
+    needs: build_result  
 
     steps:
       - name: Checkout code
@@ -46,7 +47,7 @@ jobs:
       - name: Push Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
-          docker push voting-result:${{ github.run_number }}
+          docker push voting-Result:${{ github.run_number }}
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
