@@ -23,12 +23,12 @@ jobs:
 
       - name: Set IMAGE_VERSION
         id: version
-        run: echo "::set-output name=version::Voting-Result-${{ github.run_number }}"
+        run: echo "::set-output name=version::voting-vote-${{ github.run_number }}"
 
       - name: Build Vote Docker Image
         run: |
           # Use the IMAGE_VERSION variable set above
-          docker build -t voting-Vote:${{ github.run_number }} -f vote/Dockerfile vote/
+          docker build -t voting-vote:${{ github.run_number }} -f vote/Dockerfile vote/
 
   push_vote:
     name: Push Vote Docker Image
@@ -41,7 +41,7 @@ jobs:
       - name: Push Vote Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_vote step
-          docker push Voting-Vote:${{ github.run_number }}
+          docker push voting-vote:${{ github.run_number }}
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
