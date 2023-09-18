@@ -18,16 +18,18 @@ env:
 
 jobs:
   build_result:
-    name: Build Result Docker Image
+    name: Build and push Result Docker Image
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set IMAGE_VERSION
-        id: version
-        run: echo "::set-output name=version::voting-result-${{ github.run_number }}"
+      - name: Create Version Tag
+        run: |
+          echo "Creating a new version tag..."
+          docker tag voting-result:${{ github.run_number }} voting-result:latest
+          docker push voting-result:latest
 
       - name: Build Result Docker Image
         run: |
@@ -36,9 +38,16 @@ jobs:
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+  push_result:
+    name: Push Result Docker Image
+    runs-on: ubuntu-latest
+    needs: build_result
+
+    steps:
+      - name: Wait for Build to Complete
+        run: echo "Build is completed. Proceeding with pushing."
 
       - name: Push Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
           docker push voting-result:${{ github.run_number }}
-
