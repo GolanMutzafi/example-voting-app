@@ -45,5 +45,4 @@ jobs:
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
           docker push voteresult:${{ github.run_number }}
-          # push a specific image
           docker push golanm/voting:voteresult
