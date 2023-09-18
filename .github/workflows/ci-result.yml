@@ -25,11 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create Version Tag
-        run: |
-          echo "Creating a new version tag..."
-          docker tag voting-result:${{ github.run_number }} voting-result:latest
-          docker push voting-result:latest
+      #tag script here
 
       - name: Build Result Docker Image
         run: |
