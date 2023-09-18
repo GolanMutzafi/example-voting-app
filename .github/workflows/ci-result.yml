@@ -27,13 +27,16 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set above
-          docker build -t voting-result:${{ github.run_number }} -f result/Dockerfile result/
+          # Increment the version number
+          VERSION=$((GITHUB_RUN_NUMBER + 1))
+
+          # Build the Docker image with the incremented version
+          docker build -t voting-result:${VERSION} -f result/Dockerfile result/
 
       - name: Create Version Tag and Push
         run: |
           # Tag the image with "latest" and push it
-          docker tag voting-result:${{ github.run_number }} voting-result:latest
+          docker tag voting-result:${VERSION} voting-result:latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push voting-result:latest
 
@@ -50,5 +53,5 @@ jobs:
 
       - name: Push Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the build_result step
-          docker push voting-result:${{ github.run_number }}
+          # Use the version set in the build_result step
+          docker push voting-result:${VERSION}
