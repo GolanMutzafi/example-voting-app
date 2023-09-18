@@ -27,18 +27,22 @@ jobs:
 
       - name: Set IMAGE_VERSION
         id: version
-        run: echo "::set-output name=version::voteresult-${{ github.run_number }}"
+        run: echo "::set-output name=version::voteresult-latest
 
       - name: Build Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set above
-          IMAGE_TAG="voteresult:${{ github.run_number }}"
-          docker build -t $IMAGE_TAG -f result/Dockerfile result/
-          docker tag $IMAGE_TAG voteresult:latest
+          docker build -t voteresult:latest -f result/Dockerfile result/
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-  
+
+  push_result:
+    name: Push Result Docker Image
+    runs-on: ubuntu-latest
+    needs: [build_result]
+
+    steps:
       - name: Wait for Build to Complete
         run: echo "Build is completed. Proceeding with pushing."
 
@@ -46,4 +50,3 @@ jobs:
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
           docker push voteresult:latest
-
