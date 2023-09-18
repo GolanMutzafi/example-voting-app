@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
-          docker build -t voting-result:${{ github.run_number }} -f result/Dockerfile result/
+          docker build -t voteresult:${{ github.run_number }} -f result/Dockerfile result/
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -44,6 +44,6 @@ jobs:
       - name: Push Result Docker Image
         run: |
           # Use the IMAGE_VERSION variable set in the build_result step
-          docker push voting-result:${{ github.run_number }}
+          docker push voteresult:${{ github.run_number }}
           # push a specific image
           docker push golanm/voting:voteresult
