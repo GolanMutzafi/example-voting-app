@@ -25,9 +25,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set IMAGE_VERSION
-        id: version
-        run: echo "::set-output name=version::voteresult-latest
+      # - name: Set IMAGE_VERSION
+      #   id: version
+      #   run: echo "::set-output name=version::voteresult-latest
 
       - name: Build Result Docker Image
         run: |
