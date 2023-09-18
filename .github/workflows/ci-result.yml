@@ -25,13 +25,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set IMAGE_VERSION
-        id: version
-        run: echo "::set-output name=version::voteresult-${{ github.run_number }}"
-
       - name: Build Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set above
           docker build -t golanm/voting:voteresult${{ github.run_number }} -f result/Dockerfile result/
 
       - name: Login to Docker Hub
@@ -48,6 +43,5 @@ jobs:
 
       - name: Push Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the build_result step
           docker push golanm/voting:voteresult${{ github.run_number }}
       
