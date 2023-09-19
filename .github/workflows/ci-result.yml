@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
-          docker build -t golanm/voting:voteresult -f result/Dockerfile result/
+          docker build -t voteresult -f result/Dockerfile result/
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -43,5 +43,5 @@ jobs:
 
       - name: Push Result Docker Image
         run: |
-          docker push golanm/voting:voteresult
+          docker push voteresult
       
