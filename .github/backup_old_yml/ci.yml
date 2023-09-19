@@ -1,98 +1,98 @@
-# name: Docker CI
+name: Docker CI
 
-# on:
-#   push:
-#     paths:
-#       - 'vote/**'
-#       - 'result/**'
-#       - 'worker/**'
-#   pull_request:
-#     paths:
-#       - 'vote/**'
-#       - 'result/**'
-#       - 'worker/**'
+on:
+  push:
+    paths:
+      - 'vote/**'
+      - 'result/**'
+      - 'worker/**'
+  pull_request:
+    paths:
+      - 'vote/**'
+      - 'result/**'
+      - 'worker/**'
 
-# jobs:
-#   build_vote:
-#     name: Build Vote Docker Image
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-#       - name: Set IMAGE_VERSION
-#         id: version_vote
-#         run: echo "::set-output name=version::voting-app-vote-${{ github.run_number }}"
+jobs:
+  build_vote:
+    name: Build Vote Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-#       - name: Build Vote Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set above
-#           docker build -t voting-app-vote:${{ github.run_number }} -f vote/Dockerfile vote/
-#         env:
-#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set IMAGE_VERSION
+        id: version_vote
+        run: echo "::set-output name=version::votevote-${{ github.run_number }}"
 
-#   build_result:
-#     name: Build Result Docker Image
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+      - name: Build Vote Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set above
+          docker build -t votevote:${{ github.run_number }} -f vote/Dockerfile vote/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-#       - name: Set IMAGE_VERSION
-#         id: version_result
-#         run: echo "::set-output name=version::voting-app-result-${{ github.run_number }}"
+  build_result:
+    name: Build Result Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-#       - name: Build Result Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set above
-#           docker build -t voting-app-result:${{ github.run_number }} -f result/Dockerfile result/
-#         env:
-#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set IMAGE_VERSION
+        id: version_result
+        run: echo "::set-output name=version::voteresult-${{ github.run_number }}"
 
-#   build_worker:
-#     name: Build Worker Docker Image
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+      - name: Build Result Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set above
+          docker build -t voteresult:${{ github.run_number }} -f result/Dockerfile result/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-#       - name: Set IMAGE_VERSION
-#         id: version_worker
-#         run: echo "::set-output name=version::voting-worker-${{ github.run_number }}"
+  build_worker:
+    name: Build Worker Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-#       - name: Build Worker Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set above
-#           docker build -t voting-worker:${{ github.run_number }} -f worker/Dockerfile worker/
-#         env:
-#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set IMAGE_VERSION
+        id: version_worker
+        run: echo "::set-output name=version::voteworker-${{ github.run_number }}"
 
-#   push_images:
-#     name: Push Docker Images
-#     runs-on: ubuntu-latest
-#     needs: [build_vote, build_result, build_worker]
-#     steps:
-#       - name: Login to Docker Hub
-#         run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - name: Build Worker Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set above
+          docker build -t voteworker:${{ github.run_number }} -f worker/Dockerfile worker/
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-#       - name: Push Vote Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set in the build_vote step
-#           docker push voting-app-vote:${{ github.run_number }}
+  push_images:
+    name: Push Docker Images
+    runs-on: ubuntu-latest
+    needs: [build_vote, build_result, build_worker]
+    steps:
+      - name: Login to Docker Hub
+        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-#       - name: Push Result Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set in the build_result step
-#           docker push voting-app-result:${{ github.run_number }}
+      - name: Push Vote Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set in the build_vote step
+          docker push votevote:${{ github.run_number }}
 
-#       - name: Push Worker Docker Image
-#         run: |
-#           # Use the IMAGE_VERSION variable set in the build_worker step
-#           docker push voting-worker:${{ github.run_number }}
+      - name: Push Result Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set in the build_result step
+          docker push voteresult:${{ github.run_number }}
 
-# env:
-#   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Worker Docker Image
+        run: |
+          # Use the IMAGE_VERSION variable set in the build_worker step
+          docker push voteworker:${{ github.run_number }}
