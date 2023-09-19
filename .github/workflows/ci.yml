@@ -30,7 +30,6 @@ jobs:
 
       - name: Build Vote Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set above
           docker build -t votevote:${{ github.run_number }} -f vote/Dockerfile vote/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -45,7 +44,6 @@ jobs:
 
       - name: Build Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set above
           docker build -t voteresult:${{ github.run_number }} -f result/Dockerfile result/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -60,7 +58,6 @@ jobs:
 
       - name: Build Worker Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set above
           docker build -t voteworker:${{ github.run_number }} -f worker/Dockerfile worker/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -71,15 +68,12 @@ jobs:
 
       - name: Push Vote Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the build_vote step
           docker push votevote:${{ github.run_number }}
 
       - name: Push Result Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the build_result step
           docker push voteresult:${{ github.run_number }}
 
       - name: Push Worker Docker Image
         run: |
-          # Use the IMAGE_VERSION variable set in the build_worker step
           docker push voteworker:${{ github.run_number }}
