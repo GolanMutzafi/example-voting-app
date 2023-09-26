@@ -38,6 +38,12 @@ jobs:
     needs: [build_result]
 
     steps:
+      - name: Debug Info
+        run: |
+          docker --version
+          docker info
+          env
+
       - name: Wait for Build to Complete
         run: echo "Build is completed. Proceeding with pushing."
 
