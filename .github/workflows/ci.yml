@@ -66,6 +66,10 @@ jobs:
           docker --version
           docker info
 
+      - name: Debug Docker Config
+        run: |
+          docker --config ~/.docker/config.json --version
+
       - name: Push Vote Docker Image
         run: |
           docker push votevote:${{ github.run_number }}
