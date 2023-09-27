@@ -72,7 +72,7 @@ jobs:
 
       - name: Push Vote Docker Image
         run: |
-          docker push golan/votevote:${{ github.run_number }}
+          docker push votevote:${{ github.run_number }}
 
       - name: Push Result Docker Image
         run: |
