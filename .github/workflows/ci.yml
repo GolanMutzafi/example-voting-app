@@ -24,36 +24,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set IMAGE_VERSION for Vote
-        id: version_vote
-        run: echo "::set-output name=version::votevote-${{ github.run_number }}"      
-
       - name: Build Vote Docker Image
         run: |
-          docker build -t votevote:${{ github.run_number }} -f vote/Dockerfile vote/
+          docker build -t golanm/voting:votevote -f vote/Dockerfile vote/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       
-
-      - name: Set IMAGE_VERSION for Result
-        id: version_result
-        run: echo "::set-output name=version::voteresult-${{ github.run_number }}"
-
       - name: Build Result Docker Image
         run: |
-          docker build -t voteresult:${{ github.run_number }} -f result/Dockerfile result/
+          docker build -t golanm/voting:voteresult -f result/Dockerfile result/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set IMAGE_VERSION for Worker
-        id: version_worker
-        run: echo "::set-output name=version::voteworker-${{ github.run_number }}"
-
       - name: Build Worker Docker Image
         run: |
-          docker build -t voteworker:${{ github.run_number }} -f worker/Dockerfile worker/
+          docker build -t golanm/voting:voteworker -f worker/Dockerfile worker/
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
