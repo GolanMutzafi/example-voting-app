@@ -26,7 +26,7 @@ jobs:
 
       - name: Set IMAGE_VERSION for Vote
         id: version_vote
-        run: echo "::set-output name=version::votevote-${{ github.run_number }}"
+        run: echo "::set-output name=version::votevote-${{ github.run_number }}"      
 
       - name: Build Vote Docker Image
         run: |
