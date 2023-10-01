@@ -73,13 +73,13 @@ jobs:
 
       - name: Push Vote Docker Image
         run: |
-          docker push votevote:${{ github.run_number }}
+          docker push golanm/voting:votevote
 
       - name: Push Result Docker Image
         run: |
-          docker push voteresult:${{ github.run_number }}
+          docker push golanm/voting:voteresult
 
       - name: Push Worker Docker Image
         run: |
-          docker push voteworker:${{ github.run_number }}
+          docker push golanm/voting:voteworker
       
