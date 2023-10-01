@@ -49,5 +49,5 @@ jobs:
 
       - name: Push Result Docker Image
         run: |
-          docker push voteresult
+          docker push golanm/voting:voteresult
       
